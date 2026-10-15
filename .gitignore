@@ -1,0 +1,14 @@
+# Ignore temporary mask debug scratch images
+assets/*debug*.png
+assets/test_*.png
+assets/test_*.jpg
+assets/verify_*.png
+assets/user_*.png
+assets/crop_*.png
+assets/refined_mask*.png
+assets/exact_mask*.png
+assets/mask_comparison*.png
+assets/window_crop.png
+assets/window_mask_test.png
+__pycache__/
+*.pyc

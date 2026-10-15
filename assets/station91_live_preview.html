@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Station 91: Kent Avenue Coder Loft — Repeated Rain Video Loop</title>
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --card-bg: rgba(22, 27, 34, 0.85);
+      --accent: #4ade80;
+      --accent-cyan: #38bdf8;
+      --accent-amber: #fbbf24;
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+    header {
+      width: 100%;
+      max-width: 1376px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge-live {
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .controls-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    button {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    button.active {
+      background: rgba(74, 222, 128, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .player-container {
+      position: relative;
+      width: 100%;
+      max-width: 1376px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      background: #000;
+      aspect-ratio: 1376 / 768;
+    }
+    video, img.master-plate {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+    img.master-plate {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    img.master-plate.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .hud-overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #94a3b8;
+      pointer-events: none;
+      line-height: 1.6;
+    }
+    .hud-overlay span.highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .hud-overlay span.highlight-cyan {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+    .loop-counter {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--accent-cyan);
+    }
+    .info-grid {
+      width: 100%;
+      max-width: 1376px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
+    }
+    .info-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-card ul {
+      list-style: none;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .info-card li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .info-card li::before {
+      content: "•";
+      color: var(--accent);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="badge-live">SEAMLESS REPEATING VIDEO</span>
+      <div>
+        <h1>Station 91: Kent Avenue Coder Loft (Iteration 15)</h1>
+        <div class="subtitle">Modern Art ("Everything Important Is Invisible") · Piano Key Synth · Modern Rimless Reef · Repeated Rain Video</div>
+      </div>
+    </div>
+    <div class="controls-top">
+      <button id="btnSwitchIter" onclick="switchIteration()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="4 15 8 9 12 11 16 6 20 10"/></svg>
+        <span id="iterLabel">Switch to Iter 14</span>
+      </button>
+      <button id="btnTogglePlate" onclick="togglePlate()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Compare Static Plate
+      </button>
+      <button id="btnFullscreen" onclick="toggleFullscreen()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Full Screen
+      </button>
+      <button id="btnMeowCP" class="active" onclick="cycleMeowCPState()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span id="meowcpBtnLabel">MeowCP: Purring</span>
+      </button>
+      <button id="btnAudio" class="active" onclick="toggleAudio()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <span id="audioLabel">Unmute Focus Beat</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="player-container" id="playerContainer">
+    <video id="loopVideo" autoplay loop muted playsinline>
+      <source id="videoSource" src="iter15_coder_loft_actual_rain_loop.mp4" type="video/mp4">
+    </video>
+    <img id="staticPlate" class="master-plate" src="iter15_coder_loft_art_synth_aquarium.jpg" alt="Static Master Plate">
+    
+    <div class="hud-overlay" id="hudOverlay">
+      <div>SCENE: <span class="highlight-cyan">ITERATION 15 (ULTIMATE CODER LOFT)</span></div>
+      <div>WALL ART: <span class="highlight">"EVERYTHING IMPORTANT IS INVISIBLE" + TALL FILAMENTS</span></div>
+      <div>SYNTHESIZER: <span class="highlight">PIANO KEYS (RHODES / PROPHET) + MODULAR</span></div>
+      <div>AQUARIUM: <span class="highlight">CRISP MODERN RIMLESS REEF (ACTINIC BLUE CORALS)</span></div>
+      <div>WINDOWS: <span class="highlight">ACTUAL REPEATING RAIN VIDEO (ZERO WARP)</span></div>
+      <div>TERMINAL: <span class="highlight">1.5 Hz BLINKING CURSOR</span> | CODE: VS CODE DARK</div>
+    </div>
+
+    <div class="hud-overlay" id="meowcpHud" style="top: auto; bottom: 16px; left: 16px; border-color: rgba(56, 189, 248, 0.35);">
+      <div>OPENMEOW COLONY: <span class="highlight-cyan" id="mcColony">STATION-91-CORE (ALLEY_CAT)</span></div>
+      <div>AGENT STATE: <span class="highlight" id="mcState">PURRING (NOMINAL)</span></div>
+      <div>VET / BELLY TRAP: <span class="highlight" id="mcVet">3 PHANTOM MICE INTERCEPTED</span></div>
+      <div>KIBBLE BUDGET: <span class="highlight-cyan" id="mcKibble">$0.42 / $5.00 SESSION</span> | TAIL LOG: <span class="highlight">ACTIVE</span></div>
+    </div>
+
+    <div class="loop-counter" id="loopCounter">LOOP PASS: #1</div>
+  </div>
+
+  <audio id="focusAudio" loop preload="auto">
+    <source src="Suite_B_v2_1_meute_lockin.mp3" type="audio/mp3">
+  </audio>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>🎨 1. Jonathan's Modern Art & Clean Space</h3>
+      <ul>
+        <li><strong>Wall Art</strong>: Jonathan's iconic large canvas <em>"EVERYTHING IMPORTANT IS INVISIBLE"</em> hung above the coder desk on whitewashed brick with brass picture lamps, flanked by the cyan/red branching filament panels.</li>
+        <li><strong>Flooring</strong>: Rich, polished dark walnut hardwood planks with soft woven wool area rugs—completely free of grime, oil, or warehouse stains.</li>
+        <li><strong>Rally Porsche</strong>: Martini Racing #8 vintage safari rally Porsche 911 in the illuminated showroom viewing garage.</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <h3>🎹 2. Piano Keys Synthesizer & Crisp Aquarium</h3>
+      <ul>
+        <li><strong>Synthesizer Setup</strong>: Vintage electric keyboard synthesizer with full black & white piano keys on chrome legs, stacked with an analog modular/Minimoog console.</li>
+        <li><strong>Modern Rimless Aquarium</strong>: Ultra-clear low-iron glass reef tank beside the window with actinic blue-violet lighting, vivid live corals, and swimming tangs.</li>
+        <li><strong>Brass Equipment</strong>: Golden brass sousaphone gleaming in the front corner.</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <h3>🌧️ 3. The Repeating Rain Video Loop</h3>
+      <ul>
+        <li><strong>Real Rain Footage</strong>: High-definition video of dynamic water droplets and sliding rivulets playing through the glass panes.</li>
+        <li><strong>Rock-Solid Interior</strong>: The coder code, car, synth keys, and paintings stay 100% stable with zero AI morphing or jitter.</li>
+        <li><strong>Infinite Repeat</strong>: Symmetrical 0.75s cross-fading ensures a seamless loop for 24/7 broadcast or long study tapes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('loopVideo');
+    const videoSource = document.getElementById('videoSource');
+    const plate = document.getElementById('staticPlate');
+    const btnToggle = document.getElementById('btnTogglePlate');
+    const counter = document.getElementById('loopCounter');
+    const audio = document.getElementById('focusAudio');
+    const btnAudio = document.getElementById('btnAudio');
+    const audioLabel = document.getElementById('audioLabel');
+    const iterLabel = document.getElementById('iterLabel');
+    const hudOverlay = document.getElementById('hudOverlay');
+
+    let currentIter = 15;
+    function switchIteration() {
+      if (currentIter === 15) {
+        currentIter = 14;
+        iterLabel.textContent = "Switch to Iter 15";
+        videoSource.src = "iter14_coder_loft_actual_rain_loop.mp4";
+        plate.src = "iter14_coder_loft_clean_rain.jpg";
+        hudOverlay.innerHTML = `
+          <div>SCENE: <span class="highlight-cyan">ITERATION 14 (ORIGINAL CODER LOFT)</span></div>
+          <div>LAYER 0 (ROOM): <span class="highlight">STABLE & CRISP</span> (0% WARPING)</div>
+          <div>WINDOWS: <span class="highlight">ACTUAL REPEATING RAIN VIDEO</span></div>
+          <div>TERMINAL: <span class="highlight">1.5 Hz BLINKING CURSOR</span></div>
+        `;
+      } else {
+        currentIter = 15;
+        iterLabel.textContent = "Switch to Iter 14";
+        videoSource.src = "iter15_coder_loft_actual_rain_loop.mp4";
+        plate.src = "iter15_coder_loft_art_synth_aquarium.jpg";
+        hudOverlay.innerHTML = `
+          <div>SCENE: <span class="highlight-cyan">ITERATION 15 (MASTER CODER LOFT)</span></div>
+          <div>WALL ART: <span class="highlight">"EVERYTHING IMPORTANT IS INVISIBLE" + TALL FILAMENTS</span></div>
+          <div>SYNTHESIZER: <span class="highlight">PIANO KEYS (RHODES / PROPHET) + MODULAR</span></div>
+          <div>AQUARIUM: <span class="highlight">CRISP MODERN RIMLESS REEF (ACTINIC BLUE CORALS)</span></div>
+          <div>WINDOWS: <span class="highlight">ACTUAL REPEATING RAIN VIDEO</span></div>
+        `;
+      }
+      video.load();
+      video.play();
+      passCount = 1;
+      counter.textContent = `LOOP PASS: #1`;
+    }
+
+    let passCount = 1;
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime < 0.15 && video.dataset.lastTime > video.duration - 0.3) {
+        passCount++;
+        counter.textContent = `LOOP PASS: #${passCount}`;
+      }
+      video.dataset.lastTime = video.currentTime;
+    });
+
+    let showingPlate = false;
+    function togglePlate() {
+      showingPlate = !showingPlate;
+      plate.classList.toggle('visible', showingPlate);
+      btnToggle.classList.toggle('active', showingPlate);
+      btnToggle.innerHTML = showingPlate 
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Show Video Loop`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Compare Static Plate`;
+    }
+
+    function toggleFullscreen() {
+      const container = document.getElementById('playerContainer');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => alert(err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    let isPlayingAudio = false;
+    function toggleAudio() {
+      if (!isPlayingAudio) {
+        audio.play().then(() => {
+          isPlayingAudio = true;
+          audioLabel.textContent = "Pause Focus Beat";
+          btnAudio.classList.add('active');
+        }).catch(e => console.log(e));
+      } else {
+        audio.pause();
+        isPlayingAudio = false;
+        audioLabel.textContent = "Unmute Focus Beat";
+        btnAudio.classList.remove('active');
+      }
+    }
+
+    const meowcpStates = [
+      {
+        btn: "MeowCP: Purring",
+        state: "PURRING (NOMINAL)",
+        vet: "3 PHANTOM MICE INTERCEPTED",
+        kibble: "$0.42 / $5.00 SESSION",
+        color: "#4ade80"
+      },
+      {
+        btn: "MeowCP: Hunting",
+        state: "HUNTING (MOUSER ACTIVE)",
+        vet: "SCANNING CONTEXT VAULT...",
+        kibble: "$0.68 / $5.00 SESSION",
+        color: "#38bdf8"
+      },
+      {
+        btn: "MeowCP: Belly Trap!",
+        state: "CATCHING PHANTOM MOUSE (VET VETO)",
+        vet: "4 PHANTOM MICE INTERCEPTED (+1 BLOCKED)",
+        kibble: "$0.91 / $5.00 SESSION",
+        color: "#fbbf24"
+      }
+    ];
+    let meowcpIdx = 0;
+    function cycleMeowCPState() {
+      meowcpIdx = (meowcpIdx + 1) % meowcpStates.length;
+      const cur = meowcpStates[meowcpIdx];
+      document.getElementById('meowcpBtnLabel').textContent = cur.btn;
+      const stEl = document.getElementById('mcState');
+      stEl.textContent = cur.state;
+      stEl.style.color = cur.color;
+      document.getElementById('mcVet').textContent = cur.vet;
+      document.getElementById('mcKibble').textContent = cur.kibble;
+    }
+  </script>
+</body>
+</html>
